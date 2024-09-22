@@ -1,7 +1,7 @@
 name: logger_package
 description: "A new Flutter package project."
 version: 0.0.1
-homepage: 2math0.github.io/logger_package/
+homepage: https://2math0.github.io/logger_package/
 
 environment:
   sdk: ^3.5.3

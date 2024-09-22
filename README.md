@@ -7,6 +7,8 @@ This package provides a structured logging system that enforces the use of tags 
 - **Tag-based Logging**: Every log entry can optionally have a tag, making it easier to categorize and filter logs.
 - **Predefined Tags**: Common tags like `auth`, `network`, `dataService`, `ui`, `database`, etc., are provided by default.
 - **Customizable Tags**: Developers can extend the `Tag` class to create custom tags specific to their projects.
+- **File Logging**: Logs can be saved to a file, allowing users to download them for review.
+- **Log Collection**: Collected logs can be accessed for display in the UI.
 
 ## Installation
 
@@ -37,7 +39,7 @@ AppLogger().error('Failed to load data from database', tag: Tag.database);
 
 ### 2. **Custom Tags**
 
-You can also create your own tags by extending the `Tag` class. This is useful when you want to define specific tags relevant to your project.
+You can create your own tags by extending the `Tag` class.
 
 ```dart
 class CustomTag extends Tag {
@@ -59,6 +61,9 @@ You can configure the logger to control whether logging is enabled and set the m
 AppLogger().configure(LoggerConfig(
   enableLogging: true,
   logLevel: Level.info,
+  enableFileLogging: true,
+  fileLogLevel: Level.warning,
+  filePath: 'logs/app_logs.txt',
 ));
 ```
 
@@ -82,7 +87,27 @@ void main() {
 }
 ```
 
-### 5. **Only Print Warnings in Flutter Web Console**
+### 5. **File Logging**
+
+You can log messages to a file based on specified log levels. This allows users to download logs for review.
+
+```dart
+AppLogger().configure(LoggerConfig(
+  enableFileLogging: true,
+  fileLogLevels: [Level.warning], // Choose which log levels to include
+  filePath: 'logs/app_logs.txt', // Specify the file path
+));
+```
+
+### 6. **Retrieving Collected Logs**
+
+You can retrieve all collected logs for displaying in the UI:
+
+```dart
+List<Object?> logs = AppLogger().getLogs();
+```
+
+### 7. **Only Print Warnings in Flutter Web Console**
 
 If you want to restrict logging in Flutter Web to only show warnings or higher levels:
 
@@ -139,3 +164,11 @@ This package is licensed under the Mozilla License.
 ### How the Tag System Works
 
 The `Tag` system forces categorization of log messages by requiring a tag for every log. You can use predefined tags or create your own by extending the `Tag` class. This ensures logs are organized and can be filtered based on the log's tag, making it easier to track issues across different parts of an application.
+
+### How to Log to a File
+
+The logger can write logs to a specified file based on the configured log level. This allows for easy retrieval and download of logs, particularly useful for web applications.
+
+### Log Collection
+
+Collected logs can be accessed and displayed in the UI, enabling developers to show logs for user review or debugging purposes.
