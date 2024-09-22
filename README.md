@@ -14,7 +14,10 @@ Add the following to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  
+  logger_package:
+    git:
+      url: https://2math0.github.io/logger_package/
+      ref: main
 ```
 
 Run `flutter pub get` to install the dependencies.
