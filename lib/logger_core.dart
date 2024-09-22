@@ -1,8 +1,9 @@
 import 'dart:developer';
 import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
+import 'package:logger_package/logger_collector.dart';
 import 'package:logger_package/tags.dart';
+import 'logger_file.dart';
 
 /// AppLogger is a singleton class that provides an easy-to-use logging system.
 /// It supports log levels and optional tagging for each log message.
@@ -28,11 +29,17 @@ class LoggerConfig {
   final bool enableLogging;
   final Level logLevel;
   final LogPrinter? customPrinter;
+  final bool enableFileLogging;
+  final List<Level> fileLogLevels;
+  final String? filePath;
 
   LoggerConfig({
     this.enableLogging = true,
     this.logLevel = Level.trace,
     this.customPrinter,
+    this.enableFileLogging = false,
+    this.fileLogLevels = const [Level.error],
+    this.filePath,
   });
 }
 
@@ -40,10 +47,10 @@ class AppLogger {
   static final AppLogger _instance = AppLogger._internal();
   late Logger _logger;
   late LoggerConfig _config;
+  final LogCollector _logCollector = LogCollector();
+  FileLogger? _fileLogger;
 
-  factory AppLogger() {
-    return _instance;
-  }
+  factory AppLogger() => _instance;
 
   AppLogger._internal() {
     _config = LoggerConfig(); // Default config
@@ -52,7 +59,12 @@ class AppLogger {
 
   /// Configures and reinitialized the logger
   void configure(LoggerConfig config) {
+    if (_config.enableFileLogging) {
+      _fileLogger = FileLogger(
+          filePath: _config.filePath ?? '', logLevels: _config.fileLogLevels);
+    }
     _config = config;
+
     _initializeLogger();
   }
 
@@ -79,6 +91,10 @@ class AppLogger {
     try {
       if (_config.enableLogging && level.index >= _config.logLevel.index) {
         final logMessage = '[${tag ?? "AppLogger"}] $message';
+
+        _logCollector.addLog(message); // Collect the log
+        _fileLogger?.logToFile(message, level); // Log to file if enabled
+
         if (logFunction != null) {
           _logger.log(level, logFunction());
         } else {
@@ -114,12 +130,16 @@ class AppLogger {
       _log(Level.fatal, message, tag: tag);
 
   /// Lazy logging: pass in a function that returns a message
-  void lazyLog(Level level, Function() logFunction, {Tag? tag}) {
-    _log(level, null, logFunction: logFunction);
-  }
+  void lazyLog(Level level, Function() logFunction, {Tag? tag}) =>
+      _log(level, null, logFunction: logFunction);
 
   /// Optionally log with metadata (custom tag, additional context)
-  void logWithMetadata(Level level, Object? message, {Tag? tag}) {
-    _log(level, message, tag: tag);
-  }
+  void logWithMetadata(Level level, Object? message, {Tag? tag}) =>
+      _log(level, message, tag: tag);
+
+  /// Retrieve logs for UI
+  List<Object?> getLogs() => _logCollector.getLogs();
+
+  /// Clear collected logs
+  void clearLogs() => _logCollector.clearLogs();
 }
