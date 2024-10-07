@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logger_package/logger_collector.dart';
 import 'package:logger_package/tags.dart';
-import 'logger_file.dart';
+import 'logger_file/logger_file.dart';
 
 /// AppLogger is a singleton class that provides an easy-to-use logging system.
 /// It supports log levels and optional tagging for each log message.
