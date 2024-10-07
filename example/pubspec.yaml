@@ -38,7 +38,7 @@ dependencies:
   logger_package:
     git:
       url: https://github.com/2Math0/logger_package.git
-      ref: main
+      ref: 68b705e301592c19275d6c08d8292a3a649c09f1
 
 dev_dependencies:
   flutter_test:
